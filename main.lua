@@ -57,7 +57,8 @@ local function AskQuestion()
 	randomNumber4 = math.random(1,10)
 	randomNumber5 = math.random(1,20)
 	randomNumber6 = math.random(1,20)
-    randomOperator = math.random(1,4)  
+    randomOperator = math.random(1,4) 
+    randomOperator = 4 
 
     
     --display the points on the screen 
