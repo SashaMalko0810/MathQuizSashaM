@@ -58,48 +58,49 @@ local function AskQuestion()
 	randomNumber5 = math.random(1,20)
 	randomNumber6 = math.random(1,20)
     randomOperator = math.random(1,4)  
+
     
     --display the points on the screen 
     pointsObject.text = "Points" .. " = ".. points
    
+   	-- 
     if (randomOperator == 1) then
-    correctAnswer = randomNumber1 + randomNumber2
+    	correctAnswer = randomNumber1 + randomNumber2
 	
-	--create question in text object
-	questionObject.text = randomNumber1 .. "+" .. randomNumber2 .. "="
-	end
+		--create question in text object
+		questionObject.text = randomNumber1 .. "+" .. randomNumber2 .. "="
 
-    if (randomOperator == 2) then 
+	-- 
+    elseif (randomOperator == 2) then 
 	   correctAnswer = randomNumber1 - randomNumber2
 	
 	   --create a question in text object
        questionObject.text = randomNumber1 .. "-" .. randomNumber2 .. "="
      
 
-      if correctAnswer < 0 then 
-         correctAnswer = randomNumber2 - randomNumber1
+      	if (correctAnswer < 0) then 
+        	correctAnswer = randomNumber2 - randomNumber1
       
-         --create a question in text object
-         questionObject.text = randomNumber2 .. "-" .. randomNumber1 .. "="
-    end end
-      
-    if (randomOperator == 3) then 
-	correctAnswer = randomNumber3 * randomNumber4
+         	--create a question in text object
+         	questionObject.text = randomNumber2 .. "-" .. randomNumber1 .. "="
+    	end 
 
-	--create question in text object
-	questionObject.text = randomNumber3 .. "*" .. randomNumber4 .. "="
-    end
+    elseif (randomOperator == 3) then 
+		correctAnswer = randomNumber3 * randomNumber4
 
-    if (randomOperator == 4) then
-    correctAnswer = randomNumber5 / randomNumber6
+		--create question in text object
+		questionObject.text = randomNumber3 .. "*" .. randomNumber4 .. "="
 
-        if correctAnswer > 0 then
-    	correctAnswer = randomNumber5 * randomNumber6
-    	divide = correctAnswer / randomNumber5 
-    end
+    elseif (randomOperator == 4) then
+    	correctAnswer = randomNumber5 / randomNumber6
+
+        if (correctAnswer > 0) then
+    		correctAnswer = randomNumber5 * randomNumber6
+    		divide = correctAnswer / randomNumber5 
+    	end
 	
-	--create question in text object
-	questionObject.text = correctAnswer .. "/" .. randomNumber5 .. "="
+		--create question in text object
+		questionObject.text = correctAnswer .. "/" .. randomNumber5 .. "="
 	end
 end
 
