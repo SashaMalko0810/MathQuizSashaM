@@ -35,83 +35,147 @@ local totalSeconds = 10
 local secondsLeft = 10
 local clockText
 local countDownTimer
-local lives = 5
+local lives = 4
 local heart1
 local heart2
 local heart3
-local heart4
 local gameOver
+local divide
+local winner
+local correctText
+local squareRoot
 local gameOverSound = audio.loadSound("Sounds/GameOver.mp3")
 local gameOverSoundChannel
-local divide
-
+local winnerSound = audio.loadSound("Sounds/winner.mp3")
+local winnerSoundChannel
+local correctSound = audio.loadSound("Sounds/Correct.mp3")
+local correctSoundChannel
+local incorrectSound = audio.loadSound("Sounds/Incorrect.mp3")
+local incorrectSoundChannel
+local timesMultiplied
 ----------------------------------------------------------------------------------------------
 --LOCAL FUNCTIONS
 ----------------------------------------------------------------------------------------------
 
 local function AskQuestion()
-	--generate 2 random numbers between a max. and a min. number
+	
+	--generate random numbers between a max. and a min. number and a random operator
 	randomNumber1 = math.random(1,20)
 	randomNumber2 = math.random(1,20)
 	randomNumber3 = math.random(1,10)
 	randomNumber4 = math.random(1,10)
-	randomNumber5 = math.random(1,20)
-	randomNumber6 = math.random(1,20)
-    randomOperator = math.random(1,4) 
-    randomOperator = 4 
+	randomNumber5 = math.random(1,5)
+	randomNumber6 = math.random(1,5)
+    randomOperator = math.random(1,7) 
+    randomOperator = 7
 
-    
     --display the points on the screen 
     pointsObject.text = "Points" .. " = ".. points
    
-   	-- 
+    --if the random operator is 1:
     if (randomOperator == 1) then
+    	
+    	--add the numbers
     	correctAnswer = randomNumber1 + randomNumber2
 	
 		--create question in text object
 		questionObject.text = randomNumber1 .. "+" .. randomNumber2 .. "="
 
-	-- 
+    --if the random operator is 2:
     elseif (randomOperator == 2) then 
-	   correctAnswer = randomNumber1 - randomNumber2
+    	
+    	--subtract the numbers
+	    correctAnswer = randomNumber1 - randomNumber2
 	
 	   --create a question in text object
        questionObject.text = randomNumber1 .. "-" .. randomNumber2 .. "="
      
-
+         --if the correct answer is less than 0:
       	if (correctAnswer < 0) then 
+      		
+      		--allow the question to have a positive answer
         	correctAnswer = randomNumber2 - randomNumber1
       
          	--create a question in text object
          	questionObject.text = randomNumber2 .. "-" .. randomNumber1 .. "="
     	end 
 
+    --if the random operator is 3:
     elseif (randomOperator == 3) then 
+    	
+    	--multiply the numbers
 		correctAnswer = randomNumber3 * randomNumber4
 
 		--create question in text object
 		questionObject.text = randomNumber3 .. "*" .. randomNumber4 .. "="
 
+    --if the random operator is 4:
     elseif (randomOperator == 4) then
-    	correctAnswer = randomNumber5 / randomNumber6
+    	--divide the numbers evenly
+        divide = randomNumber3 * randomNumber4
+        correctAnswer = divide / randomNumber3 
+    	
+	    --create question in text object
+		questionObject.text = divide .. "/" .. randomNumber3 .. "="
 
-        if (correctAnswer > 0) then
-    		correctAnswer = randomNumber5 * randomNumber6
-    		divide = correctAnswer / randomNumber5 
-    	end
+    --if the random operator is 5:
+	elseif (randomOperator == 5) then
+		--square root the numbers without decimal answers 
+    	squareRoot = randomNumber1 * randomNumber1
+        correctAnswer = math.sqrt(squareRoot)
 	
 		--create question in text object
-		questionObject.text = correctAnswer .. "/" .. randomNumber5 .. "="
-	end
+		questionObject.text = squareRoot .. " sqrt" 
+
+    --if the random operator is 6:
+	elseif (randomOperator == 6) then
+		--have exponent questions
+    	correctAnswer = randomNumber5^randomNumber6
+	
+		--create question in text object
+		questionObject.text = randomNumber5 .. "^" .. randomNumber6 .. "="
+
+    --if the random operator is 7:
+    elseif (randomOperator == 7) then
+    	--have factorial questions
+    	function factorial(n)
+         if (n == 0) then
+           return 1
+           else
+            return n * factorial(n - 1)
+    end end
 end
 
+for n = 0, 16 do
+    io.write(n, "! = ", factorial(n), "\n")
+end
+   
+
+
 local function HideCorrect()
+	
+	--allow the correct object to be invisible
 	correctObject.isVisible = false
+	
+	--call the function to ask the question
 	AskQuestion()
 end
 
 local function HideIncorrect()
+	
+	--allow the incorrect object to be invisible
 	incorrectObject.isVisible = false
+
+	--call the function to ask the question
+	AskQuestion()
+end
+
+local function HideCorrectText()
+	
+	--alow the correct text to be invisible
+	correctText.isVisible = false
+
+	--call the function to ask the question
 	AskQuestion()
 end
 
@@ -122,7 +186,8 @@ local function NumericFieldListener(event)
 
 		--clear text field
 		event.target.text = ""
-
+    
+    --if the event phase is submitted:
 	elseif event.phase == "submitted" then
 
 		--when the answer is sumbitted (enter key is pressed) set user input to user's answer
@@ -130,35 +195,92 @@ local function NumericFieldListener(event)
 
 		--if the user's answer and the correct answer are the same:
 		if (userAnswer == correctAnswer) then
+
+			--reset the time
+			secondsLeft = totalSeconds
+
+			--make the correct object visible for a certain amount of time
 			correctObject.isVisible = true
-			incorrectObject.isVisible = false
 			timer.performWithDelay(1000,HideCorrect)
+
+			--make the incorrect object invisible
+			incorrectObject.isVisible = false
+            
+            --add one point and display it
 			points = points + 1
 			pointsObject.text = "Points" .. " = ".. points
+
+			--play a correct sound effect
+			correctSoundChannel = audio.play(correctSound)
+
+			   --if the user gets to 5 points, allow them to win the game
+			   if (points == 5) then 
+
+			     --allow the winner image to be visible
+	             winner.isVisible = true
+
+	             --play the winner sound effect
+	             winnerSoundChannel = audio.play(winnerSound)
+
+	             --make the numeric text field invisible
+	             numericField.isVisible = false
+
+	             --make the total seconds 0
+	             totalSeconds = 0
+                end
 			
-            elseif (userAnswer) then
+		--if the user's answer and the correct answer are not the same:
+        elseif (userAnswer) then
+
+            --reset the time
+            secondsLeft = totalSeconds
+
+            --make the correct object invisible
 			correctObject.isVisible = false
+
+			--make the incorrect object visible for a certain amount of time
 			incorrectObject.isVisible = true
 			timer.performWithDelay(1000,HideIncorrect)
+
+			--take away one life
 			lives = lives - 1
-        if (lives == 4) then
-	    	heart4.isVisible = false
-        elseif (lives == 3) then
-	    	heart3.isVisible = false
-	    	elseif (lives == 2) then 
-	    		heart2.isVisible = false
-	    		elseif (lives == 1) then
-	    			heart1.isVisible = false
-	    			gameOver.isVisible = true	
-	    			numericField.isVisible = false
-	    			clockText.isVisible = false
-	    			gameOverSoundChannel = audio.play(gameOverSound)
-	        end 
-	    
-	    --clear text field
-		event.target.text = ""
-		
+
+			--display the correct answer for a certain amount of time
+			correctText.text = "Correct Answer: " .. correctAnswer
+			correctText.isVisible = true
+			timer.performWithDelay(1000,HideCorrectText)
+
+			--play an incorrect sound effect
+			incorrectSoundChannel = audio.play(incorrectSound)
+			    
+			    --allow hearts to disapear if answer is incorrect
+                if (lives == 3) then
+	    	       heart3.isVisible = false
+                elseif (lives == 2) then
+	    	       heart2.isVisible = false
+                --if there are no more lives:
+                elseif (lives == 1) then 
+                	heart1.isVisible = false
+                   
+                   --hide the correct text
+	    		   timer.performWithDelay(0,HideCorrectText)
+	    		   
+	    		   --make the game over image visible
+	    	       gameOver.isVisible = true
+	    	       
+	    	       --hide the numeric text field	
+	    		   numericField.isVisible = false
+	    		   
+	    		   --make the clock text invisible
+	    		   clockText.isVisible = false
+	    		   
+	    		   --play a game over sound effect
+	    		   gameOverSoundChannel = audio.play(gameOverSound)
+
+	        end
 		end
+    --clear text field
+    event.target.text = ""
 	end
 end
 
@@ -169,31 +291,51 @@ local function UpdateTime()
 
 	--display the number of seconds left in the clock object
 	clockText.text = secondsLeft .. "" 
-
+    
+    --if the time is up:
 	if (secondsLeft == 0) then
+		
 		--reset the number of seconds left
 		secondsLeft = totalSeconds
+		
+		--take away one life
 	    lives = lives - 1
+	    
+	    --call the function to ask the question
 	    AskQuestion()
-
+        
+        --allow lives to disapear if the time runs out 
 	    if (lives == 4) then
 	    	heart4.isVisible = false
         elseif (lives == 3) then
 	    	heart3.isVisible = false
-	    	elseif (lives == 2) then 
-	    		heart2.isVisible = false
-	    		elseif (lives == 1) then
-	    			heart1.isVisible = false
-	    			gameOver.isVisible = true
-	    			numericField.isVisible = false
-	    			clockText.isVisible = false
-	    			gameOverSoundChannel = audio.play(gameOverSound)			
+	    elseif (lives == 2) then 
+	    	heart2.isVisible = false
+	    --if there are no lives left:
+	    elseif (lives == 1) then
+	    	heart1.isVisible = false
+	    	
+	    	--display a game over image
+	    	gameOver.isVisible = true
+	    	
+	    	--hide numeric text field
+	    	numericField.isVisible = false
+	    	
+	    	--hide clock text
+	    	clockText.isVisible = false
+	    	
+	    	--play game over sound effect
+	    	gameOverSoundChannel = audio.play(gameOverSound)			
 	    end
     end
 end
 
+
+
+
 --function that calls the timer
 local function StartTimer()
+	
 	--create a countdown timer that loops infinitely
 	countDownTimer = timer.performWithDelay(1000, UpdateTime, 0)
 end
@@ -240,10 +382,6 @@ heart3 = display.newImageRect("Images/heart.png", 100, 100)
 heart3.x = display.contentWidth * 5 / 8
 heart3.y = display.contentHeight * 1 / 7
 
-heart4 = display.newImageRect("Images/heart.png", 100, 100)
-heart4.x = display.contentWidth * 4 / 8
-heart4.y = display.contentHeight * 1 / 7
-
 --display the timer
 clockText = display.newText("", 100, 100, Arial,70)
 clockText:setTextColor(114/255, 32/255, 27/255)
@@ -253,6 +391,17 @@ gameOver = display.newImageRect("Images/gameOver.png", 1100, 1100)
 gameOver.x = 500
 gameOver.y = 400
 gameOver.isVisible = false
+
+--create a winner scene
+winner = display.newImageRect("Images/winner.jpg", 1100, 800)
+winner.x = 500
+winner.y = 400
+winner.isVisible = false
+
+--create text that says the correct answer to a question
+correctText = display.newText("", 500, 600, Arial, 50)
+correctText:setTextColor(13/255, 130/255, 190/255)
+
 
 
 ----------------------------------------------------------------------------------------------
