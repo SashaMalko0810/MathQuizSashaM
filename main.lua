@@ -67,7 +67,6 @@ local function AskQuestion()
 	randomNumber5 = math.random(1,5)
 	randomNumber6 = math.random(1,5)
     randomOperator = math.random(1,7) 
-    randomOperator = 7
 
     --display the points on the screen 
     pointsObject.text = "Points" .. " = ".. points
@@ -121,7 +120,7 @@ local function AskQuestion()
     --if the random operator is 5:
 	elseif (randomOperator == 5) then
 		--square root the numbers without decimal answers 
-    	squareRoot = randomNumber1 * randomNumber1
+    	squareRoot = randomNumber3 * randomNumber3
         correctAnswer = math.sqrt(squareRoot)
 	
 		--create question in text object
@@ -138,18 +137,21 @@ local function AskQuestion()
     --if the random operator is 7:
     elseif (randomOperator == 7) then
     	--have factorial questions
-    	function factorial(n)
-         if (n == 0) then
-           return 1
-           else
-            return n * factorial(n - 1)
-    end end
-end
-
-for n = 0, 16 do
-    io.write(n, "! = ", factorial(n), "\n")
-end
-   
+        if (randomNumber6 == 1) then 
+       	  correctAnswer = 1
+       	elseif randomNumber6 == 2 then 
+       	  correctAnswer = 2
+       	elseif randomNumber6 == 3 then 
+       	  correctAnswer = 6
+       	elseif randomNumber6 == 4 then 
+       	  correctAnswer = 24
+       	elseif randomNumber6 == 5 then 
+       	  correctAnswer = 120
+        end
+        
+        --create question in text object
+       	questionObject.text = randomNumber6 .. "! ="
+end end
 
 
 local function HideCorrect()
